@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURONAL_RED - Informe de IA</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Estilos específicos para el diagrama de red */
+        .network-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: #fdfdfd;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #f0f0f0;
+            margin-top: 15px;
+        }
+        .layer-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .neuron {
+            width: 14px;
+            height: 14px;
+            background-color: #ddd;
+            border-radius: 50%;
+            border: 1px solid #bbb;
+        }
+        /* Colores pastel suaves para las capas */
+        .neuron.input { background-color: #d1e9f2; border-color: #a3c9d9; } /* Azul muy suave */
+        .neuron.hidden { background-color: #e0e2fe; border-color: #a5a9f2; } /* Lavanda suave */
+        .neuron.output { background-color: #d1f2eb; border-color: #a3d9cf; } /* Verde suave */
+        
+        .layer-label {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .connection-info {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container" style="max-width: 900px; margin: 20px auto;">
+    <h2 id="titulo" style="text-align: center; color: #1e293b; margin-bottom: 1.5rem;">Informe de Inteligencia Artificial</h2>
+
+    <div class="card" style="text-align: center;">
+        <h3><i class="bi bi-pie-chart-fill" style="color: var(--detalhe);"></i> Distribución de Resultados</h3>
+        <p style="font-size: 0.85rem; color: #888; margin-top: -10px; margin-bottom: 20px;">Resumen estadístico de las decisiones tomadas por la IA.</p>
+        <div style="max-width: 280px; margin: 0 auto;">
+            <canvas id="graficoIA"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="text-align: center;">
+        <h3 style="color: #6366f1;"><i class="bi bi-diagram-3-fill"></i> Arquitectura Real de NEURONAL_RED</h3>
+        <p style="font-size: 0.85rem; color: #888; margin-top: -10px; margin-bottom: 20px;">Esquema de las capas de neuronas artificiales densas dentro de `modelo_red.h5`.</p>
+        
+        <div class="network-diagram">
+            <div class="layer-column">
+                <div class="layer-label">Entrada</div>
+                <div class="neuron input"></div>
+                <div class="neuron input"></div>
+                <div class="neuron input"></div>
+                <div style="font-size: 1rem; color: #aaa;">⋮</div>
+                <div class="neuron input"></div>
+                <div class="connection-info">20 Datos</div>
+            </div>
+            
+            <div style="font-size: 1.5rem; color: #eee;">➝</div>
+
+            <div class="layer-column">
+                <div class="layer-label">Oculta 1</div>
+                <div class="neuron hidden"></div>
+                <div class="neuron hidden"></div>
+                <div class="neuron hidden"></div>
+                <div class="neuron hidden"></div>
+                <div style="font-size: 1rem; color: #aaa;">⋮</div>
+                <div class="neuron hidden"></div>
+                <div class="connection-info">32 Neuronas</div>
+            </div>
+
+            <div style="font-size: 1.5rem; color: #eee;">➝</div>
+
+            <div class="layer-column">
+                <div class="layer-label">Oculta 2</div>
+                <div class="neuron hidden"></div>
+                <div class="neuron hidden"></div>
+                <div style="font-size: 1rem; color: #aaa;">⋮</div>
+                <div class="neuron hidden"></div>
+                <div class="connection-info">16 Neuronas</div>
+            </div>
+
+            <div style="font-size: 1.5rem; color: #eee;">➝</div>
+
+            <div class="layer-column">
+                <div class="layer-label">Salida</div>
+                <div class="neuron output"></div>
+                <div class="neuron output"></div>
+                <div class="neuron output"></div>
+                <div class="connection-info">3 Clases</div>
+            </div>
+        </div>
+        <p style="font-size: 0.75rem; color: gray; font-style: italic; margin-top: 15px;">Este modelo usa Capas Densas (Dense), donde cada neurona se conecta con todas las de la capa siguiente.</p>
+    </div>
+
+    <div class="card">
+        <h3><i class="bi bi-person-lines-fill"></i> Resultados Individuales</h3>
+        <p style="font-size: 0.85rem; color: #888; margin-top: -10px; margin-bottom: 20px;">Predicción de la IA para cada estudiante analizado.</p>
+        <div style="max-height: 350px; overflow-y: auto; padding-right: 10px;">
+            <ul style="list-style: none; padding: 0; margin: 0;">
+            {% for r in resultados %}
+                <li style="background: #fbfbfb; border-bottom: 1px solid #f0f0f0; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.9rem; color: #555;">
+                        <i class="bi bi-person"></i> Estudiante #{{ loop.index }}
+                    </span>
+                    <span class="box {{ r|lower }}" style="flex: none; min-width: 70px; padding: 3px 8px; font-size: 0.75rem; border-radius: 6px;">
+                        {{ r }}
+                    </span>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div class="card">
+            <h3><i class="bi bi-bar-chart-line-fill"></i> Resumen Numérico</h3>
+            <div class="resumen" style="display: flex; gap: 10px; margin-top: 15px;">
+                <div class="box alto" style="flex: 1;"><i class="bi bi-graph-up"></i><br>Alto: {{ resumen.altos }}</div>
+                <div class="box medio" style="flex: 1;"><i class="bi bi-graph-down"></i><br>Medio: {{ resumen.medios }}</div>
+                <div class="box bajo" style="flex: 1;"><i class="bi bi-exclamation-triangle"></i><br>Bajo: {{ resumen.bajos }}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><i class="bi bi-lightbulb-fill" style="color: var(--warning);"></i> Sugerencias de la IA</h3>
+            <ul class="recomendaciones" style="text-align: left; padding-left: 15px; font-size: 0.9rem;">
+            {% for r in recomendaciones %}
+                <li style="margin-bottom: 8px;"><i class="bi bi-info-circle"></i> {{ r }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem; margin-bottom: 3rem;">
+        <button onclick="window.location.href='/'" style="background: #64748b; width: auto; padding: 12px 30px;">
+            <i class="bi bi-arrow-left"></i> Volver al Inicio / Nuevo Análisis
+        </button>
+    </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+
+<script>
+    // Gráfico de Dona (Chart.js)
+    document.addEventListener("DOMContentLoaded", function() {
+        const ctx = document.getElementById('graficoIA').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Alto', 'Medio', 'Bajo'],
+                datasets: [{
+                    data: [{{ resumen.altos }}, {{ resumen.medios }}, {{ resumen.bajos }}],
+                    backgroundColor: ['#d1f2eb', '#fef5d9', '#fadbd8'], // Colores suave pastel
+                    borderColor: ['#a3d9cf', '#f7e3a8', '#f5c6cb'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

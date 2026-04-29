@@ -1,0 +1,33 @@
+NEURONAL_RED/
+│
+├── app/
+│   ├── __init__.py        # Inicializa Flask
+│   └── routes.py          # Rutas (index, procesar, resultado)
+│
+├── ml/
+│   ├── entrenador.py      # Entrenar modelo (una sola vez)
+│   ├── modelo.py          # Cargar modelo y predecir
+│   └── modelo_red.h5      # Modelo ya entrenado
+│
+├── data/
+│   └── dataset_ml.csv     # Tu CSV para entrenar
+│
+├── utils/
+│   └── preprocesador.py   # Limpieza y transformación
+│   └── analizador.py   
+│
+├── static/
+│   ├── css/
+│   │   └── styles.css
+│   ├── js/
+│   │   └── app.js         # 🔥 aquí va lo del nombre (localStorage)
+│   └── img/
+│
+├── templates/
+│   ├── index.html         # Ingresar nombre
+│   ├── formulario.html    # Subir CSV
+│   └── resultado.html     # Mostrar resultado
+│
+├── requirements.txt
+├── main.py                 # Punto de entrada
+└── README.md
